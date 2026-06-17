@@ -6,9 +6,9 @@
 
 ## Resumen general
 
-Shadow Beat: Fragmentos de Luz es un videojuego 2D desarrollado en Unity. El proyecto corresponde a un juego de plataformas ritmico / arcade de precision, inspirado en la logica de avance automatico de juegos como Geometry Dash, pero adaptado a una propuesta propia con historia, personaje principal, antagonista, mundos diferenciados, niveles progresivos, cristales coleccionables, transformaciones y sistema de puntuacion.
+Shadow Beat: Fragmentos de Luz es un videojuego 2D desarrollado en Unity. El proyecto corresponde a un juego de plataformas ritmico / arcade de precision, inspirado en la logica de avance automatico de juegos como Geometry Dash, pero adaptado a una propuesta propia con historia, personaje principal, antagonista, mundos diferenciados, niveles progresivos, cristales coleccionables, transformaciones, ambientacion cyber/neon y sistema de puntuacion.
 
-El jugador controla a Lux, una figura geometrica luminosa que avanza automaticamente por escenarios oscuros. La jugabilidad se basa en reaccionar a obstaculos, saltar en el momento correcto, atravesar portales, cambiar de forma, invertir la gravedad y llegar a la meta de cada nivel.
+El jugador controla a Lux, una figura geometrica luminosa que avanza automaticamente por escenarios oscuros inspirados en una ciudad futurista nocturna. La jugabilidad se basa en reaccionar a obstaculos, saltar en el momento correcto, atravesar portales, cambiar de forma, invertir la gravedad y llegar a la meta de cada nivel.
 
 El proyecto fue implementado como una version funcional inicial, priorizando que existan las mecanicas principales y una estructura clara para continuar el desarrollo en etapas posteriores.
 
@@ -60,7 +60,9 @@ Caracteristicas:
 - no habla,
 - expresa su identidad mediante brillo, color y movimiento,
 - puede transformarse al atravesar portales,
-- puede saltar, volar, rebotar, atravesar sombras o moverse a alta velocidad segun su forma.
+- puede saltar, volar, rebotar, atravesar sombras o moverse a alta velocidad segun su forma,
+- tiene color aleatorio al iniciar o reintentar,
+- puede usar forma inicial seleccionable: esfera, cubo, piramide o diamante.
 
 ## Antagonista
 
@@ -81,13 +83,13 @@ En esta etapa del proyecto Noctis todavia no aparece como jefe final jugable, pe
 
 El mundo de Umbra esta dividido en tres zonas principales implementadas mediante niveles:
 
-### Bosque Oscuro
+### Bosque Neon
 
 Niveles:
 
-- Nivel 1: Primer destello.
-- Nivel 2: Camino de sombras.
-- Nivel 3: El salto perdido.
+- Nivel 1: Neon Cero.
+- Nivel 2: Ciudad del Vortice.
+- Nivel 3: Abismo Pulsante.
 
 Funcion:
 
@@ -96,13 +98,13 @@ Funcion:
 - mostrar cristales coleccionables,
 - introducir barreras de sombra y transformaciones iniciales.
 
-### Ruinas de Cristal
+### Ruinas Cyber
 
 Niveles:
 
-- Nivel 4: Fragmentos rotos.
-- Nivel 5: Torres caidas.
-- Nivel 6: Cristal inestable.
+- Nivel 4: Ciclo Galactico.
+- Nivel 5: Ecos de Cristal.
+- Nivel 6: Sincronia Ritmica.
 
 Funcion:
 
@@ -116,7 +118,7 @@ Funcion:
 
 Nivel:
 
-- Nivel 7: Gravedad cero.
+- Nivel 7: Portal Infinito.
 
 Funcion:
 
@@ -130,13 +132,13 @@ El proyecto incluye siete niveles principales:
 
 | Numero | Nombre | Mundo | Mecanica destacada |
 |---|---|---|---|
-| 1 | Primer destello | Bosque Oscuro | Tutorial, salto y cristales |
-| 2 | Camino de sombras | Bosque Oscuro | Forma sombra y barrera oscura |
-| 3 | El salto perdido | Bosque Oscuro | Forma esfera |
-| 4 | Fragmentos rotos | Ruinas de Cristal | Forma nave |
-| 5 | Torres caidas | Ruinas de Cristal | Plataformas moviles y enemigo movil |
-| 6 | Cristal inestable | Ruinas de Cristal | Forma rayo |
-| 7 | Gravedad cero | Ciudad Invertida | Cambio de gravedad |
+| 1 | Neon Cero | Ciudad Neon | Tutorial, salto y cristales |
+| 2 | Ciudad del Vortice | Ciudad Neon | Forma sombra y barrera oscura |
+| 3 | Abismo Pulsante | Ciudad Neon | Forma esfera |
+| 4 | Ciclo Galactico | Ruinas Cyber | Forma nave |
+| 5 | Ecos de Cristal | Ruinas Cyber | Plataformas moviles y enemigo movil |
+| 6 | Sincronia Ritmica | Ruinas Cyber | Forma rayo |
+| 7 | Portal Infinito | Ciudad Invertida | Cambio de gravedad |
 
 ## Mecanicas principales implementadas
 
@@ -176,7 +178,7 @@ Scripts relacionados:
 - `PortalType.cs`,
 - `LuxController.cs`.
 
-### Transformaciones
+### Transformaciones y eventos visuales
 
 Lux puede cambiar de forma segun el portal que atraviese.
 
@@ -193,7 +195,25 @@ Scripts relacionados:
 - `LuxForm.cs`,
 - `PortalType.cs`,
 - `Portal.cs`,
-- `LuxController.cs`.
+- `LuxController.cs`,
+- `PortalEffectController.cs`.
+
+Ademas, al atravesar portales se activa un cambio visual en el fondo del nivel. Esto hace que el portal no solo cambie la mecanica, sino tambien la atmosfera de la escena, con variaciones de cyan, violeta, magenta y naranja.
+
+### Ambientacion visual cyber/neon
+
+La ambientacion fue ajustada para acercarse a una ciudad futurista oscura con energia luminosa. Los niveles generados incluyen:
+
+- menu principal con foto PNG del escenario como fondo y botones reales superpuestos,
+- fondo nocturno casi negro,
+- siluetas de edificios y torres,
+- ventanas y carteles luminosos,
+- particulas pequenas tipo polvo de luz,
+- plataformas oscuras con bordes neon,
+- lineas de circuito sobre el camino,
+- portales con aura y anillos de luz,
+- meta representada como nucleo luminoso,
+- paleta principal cyan, naranja, magenta y violeta.
 
 ### Obstaculos
 
@@ -201,7 +221,7 @@ Los obstaculos provocan la muerte del jugador y activan el sistema de reintento.
 
 Obstaculos implementados:
 
-- pinchos,
+- pinchos triangulares naranja neon,
 - enemigos moviles,
 - barreras de sombra,
 - caida al vacio mediante zona de muerte.
@@ -216,6 +236,8 @@ Scripts relacionados:
 ### Cristales coleccionables
 
 Los cristales son objetos opcionales que aumentan la puntuacion final del nivel.
+
+Visualmente se diferencian de los pinchos porque los cristales se representan como rombos luminosos, mientras que los pinchos son triangulares y naranja neon.
 
 Script:
 
@@ -333,8 +355,9 @@ Este generador crea:
 
 ### Scripts de gameplay
 
-- `LuxController.cs`: controla movimiento, salto, gravedad y formas de Lux.
+- `LuxController.cs`: controla movimiento, salto, gravedad, color aleatorio y formas de Lux.
 - `Portal.cs`: aplica transformaciones o cambios de gravedad.
+- `PortalEffectController.cs`: cambia el color del fondo cuando Lux atraviesa portales.
 - `Hazard.cs`: elimina al jugador al tocar obstaculos.
 - `DeathZone.cs`: reinicia al jugador si cae al vacio.
 - `CrystalCollectible.cs`: gestiona cristales recolectables.

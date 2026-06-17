@@ -4,14 +4,17 @@ Version jugable en Unity para un juego de plataformas ritmico / arcade de precis
 
 ## Que incluye este MVP
 
-- Menu principal para elegir nivel.
-- 7 niveles principales: Bosque Oscuro, Ruinas de Cristal y Ciudad Invertida.
+- Menu principal estilo arcade neon usando la foto PNG del escenario como fondo, con botones reales encima para seleccion de nivel, seleccion de forma y `PLAY NOW`.
+- 7 niveles principales: Bosque Neon, Ruinas Cyber y Ciudad Invertida.
 - Lux avanza automaticamente hacia adelante.
 - Salto con `Space` o click.
 - Formas: cubo, esfera, nave, sombra y rayo de luz.
-- Portales de transformacion y de gravedad.
+- Color aleatorio de Lux al iniciar o reintentar.
+- Selector de forma inicial de Lux: Esfera, Cubo, Piramide o Diamante.
+- Portales de transformacion y de gravedad, con cambio visual del fondo.
+- Ambientacion inspirada en ciudad futurista nocturna: skyline oscuro, camino cyber, luces cyan/naranja/magenta, carteles flotantes y meta como nucleo luminoso.
 - Obstaculos, barreras de sombra, enemigos moviles y plataformas moviles.
-- Cristales coleccionables.
+- Pinchos triangulares naranja neon y cristales coleccionables con forma de rombo luminoso.
 - Checkpoint y reintento rapido.
 - Meta de nivel, panel de victoria, boton de siguiente nivel y volver al menu.
 - UI con nombre de nivel, progreso, cristales, intentos y puntuacion.
@@ -23,7 +26,10 @@ Version jugable en Unity para un juego de plataformas ritmico / arcade de precis
 2. Salir de Play Mode si esta activo.
 3. En el menu superior elegir `Shadow Beat > Create Complete Game`.
 4. Abrir `Assets/Scenes/MainMenu.unity`.
-5. Apretar Play y elegir un nivel desde el menu.
+5. Apretar Play.
+6. Elegir nivel, elegir forma inicial y presionar `PLAY NOW`.
+
+Si las escenas ya estaban abiertas antes de cambiar el proyecto, volver a ejecutar `Shadow Beat > Create Complete Game` para regenerarlas con la ambientacion nueva.
 
 ## Controles
 

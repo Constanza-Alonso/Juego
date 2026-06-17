@@ -25,14 +25,25 @@ public class LuxController : MonoBehaviour
     [SerializeField] private Color shadowColor = new Color(0.65f, 0.35f, 1f);
     [SerializeField] private Color rayColor = new Color(1f, 1f, 0.45f);
 
+    private readonly Color[] randomLuxColors =
+    {
+        new Color(0.2f, 0.95f, 1f),
+        new Color(1f, 0.92f, 0.25f),
+        new Color(0.65f, 0.35f, 1f)
+    };
+
     private Rigidbody2D body;
     private SpriteRenderer spriteRenderer;
+    private Sprite defaultSprite;
+    private Sprite circleSprite;
+    private Sprite triangleSprite;
     private LuxForm currentForm = LuxForm.Cube;
     private bool gravityInverted;
     private bool isDead;
     private Vector3 startPosition;
     private float lastGroundedTime;
     private float lastActionPressedTime = -10f;
+    private Color activeCubeColor;
 
     public LuxForm CurrentForm => currentForm;
     public bool IsDead => isDead;
@@ -42,7 +53,9 @@ public class LuxController : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        defaultSprite = spriteRenderer.sprite;
         startPosition = transform.position;
+        RandomizeCubeColor();
         ApplyFormVisuals();
     }
 
@@ -97,6 +110,7 @@ public class LuxController : MonoBehaviour
         transform.position = checkpoint ?? startPosition;
         body.velocity = Vector2.zero;
         isDead = false;
+        RandomizeCubeColor();
         SetForm(LuxForm.Cube);
         SetGravity(false);
     }
@@ -195,7 +209,95 @@ public class LuxController : MonoBehaviour
             LuxForm.Ship => shipColor,
             LuxForm.Shadow => shadowColor,
             LuxForm.Ray => rayColor,
-            _ => cubeColor
+            _ => activeCubeColor
         };
+
+        ApplySelectedShape();
+    }
+
+    private void RandomizeCubeColor()
+    {
+        activeCubeColor = randomLuxColors[Random.Range(0, randomLuxColors.Length)];
+    }
+
+    private void ApplySelectedShape()
+    {
+        if (currentForm != LuxForm.Cube)
+        {
+            spriteRenderer.sprite = defaultSprite;
+            transform.localRotation = Quaternion.identity;
+            return;
+        }
+
+        int shape = PlayerPrefs.GetInt("ShadowBeat_LuxShape", 0);
+        if (shape == 2)
+        {
+            spriteRenderer.sprite = GetCircleSprite();
+            transform.localRotation = Quaternion.identity;
+            return;
+        }
+
+        if (shape == 3)
+        {
+            spriteRenderer.sprite = GetTriangleSprite();
+            transform.localRotation = Quaternion.identity;
+            return;
+        }
+
+        spriteRenderer.sprite = defaultSprite;
+        transform.localRotation = Quaternion.Euler(0f, 0f, shape == 1 ? 45f : 0f);
+    }
+
+    private Sprite GetCircleSprite()
+    {
+        if (circleSprite != null)
+        {
+            return circleSprite;
+        }
+
+        const int size = 64;
+        Texture2D texture = new Texture2D(size, size);
+        texture.filterMode = FilterMode.Point;
+        Vector2 center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+        float radius = size * 0.45f;
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(x, y), center);
+                texture.SetPixel(x, y, distance <= radius ? Color.white : Color.clear);
+            }
+        }
+
+        texture.Apply();
+        circleSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+        return circleSprite;
+    }
+
+    private Sprite GetTriangleSprite()
+    {
+        if (triangleSprite != null)
+        {
+            return triangleSprite;
+        }
+
+        const int size = 64;
+        Texture2D texture = new Texture2D(size, size);
+        texture.filterMode = FilterMode.Point;
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float halfWidth = Mathf.Lerp(2f, 28f, y / (float)(size - 1));
+                bool inside = Mathf.Abs(x - 31.5f) <= halfWidth && y <= 58;
+                texture.SetPixel(x, y, inside ? Color.white : Color.clear);
+            }
+        }
+
+        texture.Apply();
+        triangleSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), size);
+        return triangleSprite;
     }
 }

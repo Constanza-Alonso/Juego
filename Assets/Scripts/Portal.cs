@@ -12,6 +12,8 @@ public class Portal : MonoBehaviour
             return;
         }
 
+        PortalEffectController.Instance?.TriggerPortalEffect(portalType);
+
         switch (portalType)
         {
             case PortalType.FlipGravity:
