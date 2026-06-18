@@ -11,6 +11,7 @@ public class ShadowBeatUI : MonoBehaviour
     [SerializeField] private Text scoreText;
     [SerializeField] private Slider progressBar;
     [SerializeField] private GameObject completedPanel;
+    [SerializeField] private GameObject pausePanel;
 
     private void OnEnable()
     {
@@ -58,6 +59,11 @@ public class ShadowBeatUI : MonoBehaviour
         if (progressBar != null)
         {
             progressBar.value = progress;
+        }
+
+        if (pausePanel != null)
+        {
+            pausePanel.SetActive(levelManager.IsPaused);
         }
     }
 

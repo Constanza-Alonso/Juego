@@ -14,6 +14,7 @@ public static class ShadowBeatSceneCreator
     private const string SpritePath = GeneratedFolder + "/WhitePixel.png";
     private const string MenuBackgroundPath = GeneratedFolder + "/MenuBackground.png";
     private const string GameplayBackgroundPath = GeneratedFolder + "/GameplayBackground.png";
+    private const string RoundedButtonPath = GeneratedFolder + "/RoundedButton.png";
     private const string ScenesFolder = "Assets/Scenes";
     private const string MenuScenePath = ScenesFolder + "/MainMenu.unity";
     private static readonly Color CyberSky = new Color(0.006f, 0.01f, 0.025f);
@@ -60,7 +61,7 @@ public static class ShadowBeatSceneCreator
         Directory.CreateDirectory(ScenesFolder);
 
         LevelSpec[] levels = GetLevels();
-        CreateMenuScene(levels);
+        ShadowBeatUIKitSceneBuilder.CreateMainMenu();
 
         for (int i = 0; i < levels.Length; i++)
         {
@@ -148,11 +149,17 @@ public static class ShadowBeatSceneCreator
         selectedText.color = new Color(1f, 0.94f, 0.62f);
         ApplyTextGlow(selectedText, NeonOrange, NeonOrange);
 
+        Text selectedShapeText = CreateText(canvasObject.transform, "SelectedShapeText", "Forma: Cubo", new Vector2(285f, -612f), TextAnchor.MiddleCenter, 18, new Vector2(240f, 30f));
+        SetTopCenter(selectedShapeText.rectTransform);
+        selectedShapeText.color = new Color(0.85f, 1f, 1f);
+        ApplyTextGlow(selectedShapeText, NeonCyan, NeonCyan);
+
         SerializedObject controllerSo = new SerializedObject(controller);
         controllerSo.FindProperty("selectedLevelSceneName").stringValue = levels[0].SceneName;
         controllerSo.FindProperty("selectedLevelLabel").stringValue = $"{levels[0].Index}. {levels[0].Name}";
         controllerSo.FindProperty("selectedLevelText").objectReferenceValue = selectedText;
         controllerSo.FindProperty("statsText").objectReferenceValue = statsText;
+        controllerSo.FindProperty("selectedShapeText").objectReferenceValue = selectedShapeText;
         controllerSo.ApplyModifiedProperties();
 
         Text levelTitle = CreateText(canvasObject.transform, "LevelSelectTitle", "SELECCION DE NIVEL", new Vector2(-245f, -245f), TextAnchor.MiddleCenter, 23, new Vector2(430f, 36f));
@@ -163,8 +170,8 @@ public static class ShadowBeatSceneCreator
         for (int i = 0; i < levels.Length; i++)
         {
             LevelSpec level = levels[i];
-            Vector2 position = new Vector2(-245f, -290f - i * 37f);
-            Button button = CreateNeonButton(canvasObject.transform, $"Level {level.Index}", $"{level.Index}.  >  {level.Name}", position, new Vector2(420f, 31f), i == 0 ? NeonCyan : level.Accent);
+            Vector2 position = new Vector2(-245f, -292f - i * 47f);
+            Button button = CreatePillLevelButton(canvasObject.transform, $"Level {level.Index}", $"{level.Index}.  >  {level.Name}", position, new Vector2(420f, 43f), i == 0 ? NeonCyan : level.Accent);
             LevelSelectButton selectButton = button.gameObject.AddComponent<LevelSelectButton>();
             SerializedObject selectSo = new SerializedObject(selectButton);
             selectSo.FindProperty("menuController").objectReferenceValue = controller;
@@ -422,7 +429,8 @@ public static class ShadowBeatSceneCreator
         LuxController controller = lux.AddComponent<LuxController>();
         SerializedObject so = new SerializedObject(controller);
         so.FindProperty("groundCheck").objectReferenceValue = groundCheck.transform;
-        so.FindProperty("autoSpeed").floatValue = Mathf.Lerp(5.25f, 6.45f, (difficulty - 1f) / 6f);
+        so.FindProperty("autoSpeed").floatValue = Mathf.Lerp(5.05f, 5.9f, (difficulty - 1f) / 6f);
+        so.FindProperty("jumpForce").floatValue = 14.2f;
         so.ApplyModifiedProperties();
         return controller;
     }
@@ -482,6 +490,11 @@ public static class ShadowBeatSceneCreator
         Text crystalsText = CreateText(canvasObject.transform, "CrystalsText", "Cristales: 0", new Vector2(180f, -28f), TextAnchor.MiddleLeft, 20, new Vector2(180f, 36f));
         Text attemptsText = CreateText(canvasObject.transform, "AttemptsText", "Intentos: 1", new Vector2(380f, -28f), TextAnchor.MiddleLeft, 20, new Vector2(180f, 36f));
         Text scoreText = CreateText(canvasObject.transform, "ScoreText", "Puntos: 0", new Vector2(570f, -28f), TextAnchor.MiddleLeft, 20, new Vector2(180f, 36f));
+        Text controlsHelp = CreateText(canvasObject.transform, "ControlsHelpText", "Space/click: accion  |  R: reintentar  |  M: menu  |  Esc: pausa", new Vector2(0f, 34f), TextAnchor.MiddleCenter, 16, new Vector2(760f, 28f));
+        controlsHelp.rectTransform.anchorMin = new Vector2(0.5f, 0f);
+        controlsHelp.rectTransform.anchorMax = new Vector2(0.5f, 0f);
+        controlsHelp.color = new Color(0.85f, 1f, 1f, 0.78f);
+
         Button menuButton = CreateButton(canvasObject.transform, "TopMenuButton", "Menu", new Vector2(-72f, -28f), new Vector2(110f, 34f), new Color(0.65f, 0.35f, 1f));
         RectTransform menuButtonRect = menuButton.GetComponent<RectTransform>();
         menuButtonRect.anchorMin = new Vector2(1f, 1f);
@@ -490,6 +503,7 @@ public static class ShadowBeatSceneCreator
 
         Slider slider = CreateSlider(canvasObject.transform);
         GameObject completedPanel = CreateCompletedPanel(canvasObject.transform, manager, isFinalLevel);
+        GameObject pausePanel = CreatePausePanel(canvasObject.transform);
 
         ShadowBeatUI ui = canvasObject.AddComponent<ShadowBeatUI>();
         SerializedObject so = new SerializedObject(ui);
@@ -501,6 +515,7 @@ public static class ShadowBeatSceneCreator
         so.FindProperty("scoreText").objectReferenceValue = scoreText;
         so.FindProperty("progressBar").objectReferenceValue = slider;
         so.FindProperty("completedPanel").objectReferenceValue = completedPanel;
+        so.FindProperty("pausePanel").objectReferenceValue = pausePanel;
         so.ApplyModifiedProperties();
     }
 
@@ -573,6 +588,68 @@ public static class ShadowBeatSceneCreator
             ApplyTextGlow(text, color, color);
         }
 
+        return button;
+    }
+
+    private static Button CreatePillLevelButton(Transform parent, string name, string label, Vector2 anchoredPosition, Vector2 size, Color color)
+    {
+        Sprite roundedSprite = GetRoundedButtonSprite();
+        GameObject glowObject = new GameObject(name + " Glow");
+        glowObject.transform.SetParent(parent, false);
+        Image glow = glowObject.AddComponent<Image>();
+        glow.sprite = roundedSprite;
+        glow.type = Image.Type.Sliced;
+        glow.color = WithAlpha(color, 0.16f);
+        glow.raycastTarget = false;
+        RectTransform glowRect = glow.GetComponent<RectTransform>();
+        glowRect.anchorMin = new Vector2(0.5f, 1f);
+        glowRect.anchorMax = new Vector2(0.5f, 1f);
+        glowRect.sizeDelta = size + new Vector2(10f, 8f);
+        glowRect.anchoredPosition = anchoredPosition;
+
+        GameObject buttonObject = new GameObject(name);
+        buttonObject.transform.SetParent(parent, false);
+        Image image = buttonObject.AddComponent<Image>();
+        image.sprite = roundedSprite;
+        image.type = Image.Type.Sliced;
+        image.color = new Color(0.015f, 0.055f, 0.075f, 0.76f);
+
+        Outline outline = buttonObject.AddComponent<Outline>();
+        outline.effectColor = WithAlpha(color, 0.92f);
+        outline.effectDistance = new Vector2(1.2f, -1.2f);
+
+        Shadow shadow = buttonObject.AddComponent<Shadow>();
+        shadow.effectColor = WithAlpha(color, 0.24f);
+        shadow.effectDistance = new Vector2(0f, -3f);
+
+        Button button = buttonObject.AddComponent<Button>();
+        button.transition = Selectable.Transition.ColorTint;
+        ColorBlock colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = Color.white;
+        colors.pressedColor = new Color(0.86f, 0.95f, 1f, 1f);
+        colors.selectedColor = Color.white;
+        colors.fadeDuration = 0.2f;
+        button.colors = colors;
+
+        RectTransform rect = button.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 1f);
+        rect.anchorMax = new Vector2(0.5f, 1f);
+        rect.sizeDelta = new Vector2(size.x, Mathf.Max(43f, size.y));
+        rect.anchoredPosition = anchoredPosition;
+
+        Text text = CreateText(buttonObject.transform, "Label", label.ToUpperInvariant(), Vector2.zero, TextAnchor.MiddleCenter, 12, size - new Vector2(52f, 0f));
+        text.fontStyle = FontStyle.Bold;
+        text.color = Color.white;
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        ApplyTextGlow(text, color, color);
+
+        RectTransform textRect = text.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = new Vector2(26f, 0f);
+        textRect.offsetMax = new Vector2(-26f, 0f);
+        textRect.anchoredPosition = Vector2.zero;
         return button;
     }
 
@@ -832,6 +909,32 @@ public static class ShadowBeatSceneCreator
         UnityEventTools.AddPersistentListener(next.onClick, manager.LoadNextLevel);
         UnityEventTools.AddPersistentListener(restart.onClick, manager.RestartLevel);
         UnityEventTools.AddPersistentListener(menu.onClick, manager.LoadMainMenu);
+        panel.SetActive(false);
+        return panel;
+    }
+
+    private static GameObject CreatePausePanel(Transform parent)
+    {
+        GameObject panel = new GameObject("PausePanel");
+        panel.transform.SetParent(parent, false);
+        Image image = panel.AddComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0.62f);
+
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = new Vector2(440f, 150f);
+
+        Text title = CreateText(panel.transform, "PauseTitle", "PAUSA", new Vector2(0f, 28f), TextAnchor.MiddleCenter, 32, new Vector2(400f, 48f));
+        title.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        title.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        title.color = NeonCyan;
+
+        Text help = CreateText(panel.transform, "PauseHelp", "Esc: continuar  |  R: reintentar  |  M: menu", new Vector2(0f, -26f), TextAnchor.MiddleCenter, 18, new Vector2(400f, 36f));
+        help.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        help.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        help.color = Color.white;
+
         panel.SetActive(false);
         return panel;
     }
@@ -1096,6 +1199,49 @@ public static class ShadowBeatSceneCreator
             importer.textureType = TextureImporterType.Sprite;
             importer.spritePixelsPerUnit = 64f;
             importer.filterMode = FilterMode.Point;
+            importer.SaveAndReimport();
+        }
+
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static Sprite GetRoundedButtonSprite()
+    {
+        const string path = RoundedButtonPath;
+        if (!File.Exists(path))
+        {
+            Texture2D texture = new Texture2D(128, 64);
+            texture.filterMode = FilterMode.Bilinear;
+            Color clear = Color.clear;
+            Color white = Color.white;
+            float radius = 31f;
+
+            for (int y = 0; y < 64; y++)
+            {
+                for (int x = 0; x < 128; x++)
+                {
+                    float leftDistance = Vector2.Distance(new Vector2(x, y), new Vector2(radius, 31.5f));
+                    float rightDistance = Vector2.Distance(new Vector2(x, y), new Vector2(127f - radius, 31.5f));
+                    bool inMiddle = x >= radius && x <= 127f - radius && y >= 0 && y < 64;
+                    bool inCaps = leftDistance <= radius || rightDistance <= radius;
+                    texture.SetPixel(x, y, inMiddle || inCaps ? white : clear);
+                }
+            }
+
+            texture.Apply();
+            File.WriteAllBytes(path, texture.EncodeToPNG());
+            Object.DestroyImmediate(texture);
+        }
+
+        AssetDatabase.ImportAsset(path);
+        TextureImporter importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spritePixelsPerUnit = 64f;
+            importer.spriteBorder = new Vector4(32f, 32f, 32f, 32f);
+            importer.filterMode = FilterMode.Bilinear;
+            importer.mipmapEnabled = false;
             importer.SaveAndReimport();
         }
 

@@ -157,6 +157,7 @@ El salto es la accion principal del jugador.
 Controles:
 
 - tecla `Space`,
+- flecha arriba,
 - click del mouse.
 
 Se agrego un pequeno margen de tolerancia mediante:
@@ -295,7 +296,9 @@ Durante el nivel se muestra una UI simple con:
 - cantidad de cristales obtenidos,
 - numero de intentos,
 - puntuacion,
-- boton para volver al menu.
+- boton para volver al menu,
+- ayuda de controles,
+- panel de pausa.
 
 Script:
 
@@ -393,7 +396,11 @@ El proyecto se encuentra en una version funcional inicial. Ya se puede:
 - volver al menu,
 - recoger cristales,
 - sumar puntos,
-- morir y reintentar.
+- morir y reintentar,
+- pausar y continuar el nivel,
+- reintentar rapidamente con teclado,
+- volver al menu con teclado,
+- elegir forma inicial con feedback visible.
 
 ## Limitaciones actuales
 

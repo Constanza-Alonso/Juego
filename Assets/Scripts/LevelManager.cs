@@ -20,12 +20,14 @@ public class LevelManager : MonoBehaviour
     private int attempts = 1;
     private int crystals;
     private bool completed;
+    private bool paused;
 
     public string LevelName => levelName;
     public int LevelIndex => levelIndex;
     public int Attempts => attempts;
     public int Crystals => crystals;
     public bool Completed => completed;
+    public bool IsPaused => paused;
     public int Score
     {
         get
@@ -74,6 +76,25 @@ public class LevelManager : MonoBehaviour
         GameEvents.OnPlayerDied -= HandlePlayerDied;
         GameEvents.OnCrystalCollected -= HandleCrystalCollected;
         GameEvents.OnLevelCompleted -= HandleLevelCompleted;
+        Time.timeScale = 1f;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePause();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartLevel();
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            LoadMainMenu();
+        }
     }
 
     public void SetCheckpoint(Vector3 position)
@@ -86,11 +107,13 @@ public class LevelManager : MonoBehaviour
 
     public void RestartLevel()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void LoadMainMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -98,6 +121,7 @@ public class LevelManager : MonoBehaviour
     {
         if (!string.IsNullOrWhiteSpace(nextSceneName))
         {
+            Time.timeScale = 1f;
             SceneManager.LoadScene(nextSceneName);
             return;
         }
@@ -126,6 +150,11 @@ public class LevelManager : MonoBehaviour
         }
 
         completed = true;
+        if (player != null)
+        {
+            player.Freeze();
+        }
+
         string completeKey = $"ShadowBeat_Level_{levelIndex}_Complete";
         string scoreKey = $"ShadowBeat_Level_{levelIndex}_BestScore";
         PlayerPrefs.SetInt(completeKey, 1);
@@ -136,7 +165,23 @@ public class LevelManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
+        if (completed || player == null || levelStart == null)
+        {
+            return;
+        }
+
         attempts++;
         player.Respawn(useCheckpoints ? checkpoint : levelStart.position);
+    }
+
+    private void TogglePause()
+    {
+        if (completed)
+        {
+            return;
+        }
+
+        paused = !paused;
+        Time.timeScale = paused ? 0f : 1f;
     }
 }

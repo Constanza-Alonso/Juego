@@ -8,10 +8,21 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private string selectedLevelLabel = "1. Primer destello";
     [SerializeField] private Text selectedLevelText;
     [SerializeField] private Text statsText;
+    [SerializeField] private Text selectedShapeText;
+
+    private static readonly string[] ShapeLabels = { "Cubo", "Diamante", "Esfera", "Piramide" };
 
     private void Awake()
     {
         RefreshMenuText();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            PlaySelectedLevel();
+        }
     }
 
     public void LoadLevel(string sceneName)
@@ -33,13 +44,18 @@ public class MainMenuController : MonoBehaviour
 
     public void PlaySelectedLevel()
     {
-        LoadLevel(selectedLevelSceneName);
+        if (!string.IsNullOrWhiteSpace(selectedLevelSceneName))
+        {
+            LoadLevel(selectedLevelSceneName);
+        }
     }
 
     public void SelectLuxShape(int shapeIndex)
     {
-        PlayerPrefs.SetInt("ShadowBeat_LuxShape", shapeIndex);
+        int safeShapeIndex = Mathf.Clamp(shapeIndex, 0, ShapeLabels.Length - 1);
+        PlayerPrefs.SetInt("ShadowBeat_LuxShape", safeShapeIndex);
         PlayerPrefs.Save();
+        RefreshMenuText();
     }
 
     public void QuitGame()
@@ -71,6 +87,12 @@ public class MainMenuController : MonoBehaviour
             }
 
             statsText.text = $"Estadisticas:\nMejor score: {bestScore}\nNiveles completos: {completedLevels}/7\nNivel desbloqueado: {unlockedLevel}";
+        }
+
+        if (selectedShapeText != null)
+        {
+            int shape = Mathf.Clamp(PlayerPrefs.GetInt("ShadowBeat_LuxShape", 0), 0, ShapeLabels.Length - 1);
+            selectedShapeText.text = $"Forma: {ShapeLabels[shape]}";
         }
     }
 }

@@ -8,8 +8,8 @@ public class LuxController : MonoBehaviour
     [SerializeField] private float jumpForce = 13.5f;
     [SerializeField] private float shipLift = 18f;
     [SerializeField] private float raySpeedMultiplier = 1.6f;
-    [SerializeField] private float jumpBufferTime = 0.12f;
-    [SerializeField] private float coyoteTime = 0.08f;
+    [SerializeField] private float jumpBufferTime = 0.16f;
+    [SerializeField] private float coyoteTime = 0.12f;
     [SerializeField] private float fallDeathY = -7f;
     [SerializeField] private float ceilingDeathY = 7f;
 
@@ -72,13 +72,13 @@ public class LuxController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetMouseButtonDown(0))
         {
             lastActionPressedTime = Time.time;
             Act();
         }
 
-        if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && currentForm == LuxForm.Ship)
+        if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.UpArrow) || Input.GetMouseButton(0)) && currentForm == LuxForm.Ship)
         {
             Fly();
         }
@@ -125,6 +125,12 @@ public class LuxController : MonoBehaviour
         isDead = true;
         body.velocity = Vector2.zero;
         GameEvents.PlayerDied();
+    }
+
+    public void Freeze()
+    {
+        isDead = true;
+        body.velocity = Vector2.zero;
     }
 
     public void SetForm(LuxForm form)
